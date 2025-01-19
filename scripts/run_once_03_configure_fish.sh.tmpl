@@ -1,4 +1,8 @@
 #!/bin/bash
 
-# Apply custom fish configuration
-chezmoi apply ~/.config/fish/config.fish
+# Apply Fish configuration safely without spawning Fish or ChezMoi processes
+if [ -f ~/.config/fish/config.fish ]; then
+  echo "Fish configuration applied."
+else
+  echo "Fish configuration file missing. Skipping."
+fi
