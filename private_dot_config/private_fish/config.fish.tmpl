@@ -8,18 +8,18 @@ if test -d /usr/local/cuda-12.6/bin
     set -x PATH /usr/local/cuda-12.6/bin $PATH
 end
 
-# Dynamically set `neofetch` ASCII distro.
+# Dynamically set `fastfetch` ASCII logo.
 if test (uname) = "Linux"
     set distro (lsb_release -is | string lower)
     if test "$distro" = "ubuntu" && test -d ~/.config/plasma-workspace
-        neofetch --ascii_distro kubuntu
+        fastfetch --logo kubuntu
     else
-        neofetch --ascii_distro $distro
+        fastfetch --logo $distro
     end
 else if test (uname) = "Darwin"
-    neofetch --ascii_distro macos
+    fastfetch --logo macos
 else
-    neofetch
+    fastfetch
 end
 
 # Remove the default Fish greeting.

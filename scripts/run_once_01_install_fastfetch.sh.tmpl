@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Install fastfetch via building or package manager
+if command -v apt >/dev/null 2>&1; then
+    sudo apt update && sudo apt install -y git cmake build-essential
+
+    git clone https://github.com/LinusDierheimer/fastfetch.git /tmp/fastfetch
+    cd /tmp/fastfetch || exit
+    cmake -B build -DCMAKE_BUILD_TYPE=Release
+    cmake --build build --target fastfetch
+    sudo cp build/fastfetch /usr/local/bin
+    rm -rf /tmp/fastfetch
+elif command -v pacman >/dev/null 2>&1; then
+    sudo pacman -Sy --noconfirm fastfetch
+elif command -v brew >/dev/null 2>&1; then
+    brew install fastfetch
+elif command -v dnf >/dev/null 2>&1; then
+    sudo dnf install -y fastfetch
+else
+    echo "No known package manager found. Skipping fastfetch installation."
+fi
