@@ -2,7 +2,6 @@
 
 # Define an array of required packages
 PACKAGES=(
-  curl
   sudo
   lsb-release
 )
@@ -29,12 +28,19 @@ else
   exit 1
 fi
 
+# Determine if sudo is needed
+if [ "$(id -u)" -ne 0 ]; then
+  SUDO="sudo"
+else
+  SUDO=""
+fi
+
 # Update package lists
 echo "Updating package lists with $PACKAGE_MANAGER..."
-$UPDATE_COMMAND
+$SUDO $UPDATE_COMMAND
 
 # Install packages
 echo "Installing required dependencies..."
 for package in "${PACKAGES[@]}"; do
-  $INSTALL_COMMAND "$package"
+  $SUDO $INSTALL_COMMAND "$package"
 done
