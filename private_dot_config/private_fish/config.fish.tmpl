@@ -11,7 +11,7 @@ end
 # Dynamically set `neofetch` ASCII distro.
 if test (uname) = "Linux"
     set distro (lsb_release -is | string lower)
-    if test "$distro" = "ubuntu" && string match -q "*kde*" $XDG_CURRENT_DESKTOP
+    if test "$distro" = "ubuntu" && test -d ~/.config/plasma-workspace
         neofetch --ascii_distro kubuntu
     else
         neofetch --ascii_distro $distro
