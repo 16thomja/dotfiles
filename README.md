@@ -1,4 +1,4 @@
-Make sure sudo and curl are installed
+Make sure curl is installed
 
 /lb means chezmoi gets installed in .local/bin
 
