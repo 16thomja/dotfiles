@@ -1,0 +1,36 @@
+# If the session is interactive, execute interactive-only commands.
+if status is-interactive
+    # Add any commands you want to run interactively.
+end
+
+# Source generic variables (e.g., colors) if they exist.
+if test -f ~/.config/fish/generic_variables.fish
+    source ~/.config/fish/generic_variables.fish
+end
+
+# Source machine-specific variables (optional, not managed by ChezMoi).
+if test -f ~/.config/fish/fish_variables
+    source ~/.config/fish/fish_variables
+end
+
+# Add CUDA to PATH if CUDA is installed.
+if test -d /usr/local/cuda-12.6/bin
+    set -x PATH /usr/local/cuda-12.6/bin $PATH
+end
+
+# Dynamically set `neofetch` ASCII distro.
+if test (uname) = "Linux"
+    set distro (lsb_release -is | string lower)
+    if test "$distro" = "ubuntu" && string match -q "*kde*" $XDG_CURRENT_DESKTOP
+        neofetch --ascii_distro kubuntu
+    else
+        neofetch --ascii_distro $distro
+    end
+else if test (uname) = "Darwin"
+    neofetch --ascii_distro macos
+else
+    neofetch
+end
+
+# Remove the default Fish greeting.
+set fish_greeting

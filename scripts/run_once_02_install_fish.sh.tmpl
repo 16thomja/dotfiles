@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Install fish shell using the appropriate package manager
+if command -v apt >/dev/null 2>&1; then
+    sudo apt update && sudo apt install -y fish
+elif command -v pacman >/dev/null 2>&1; then
+    sudo pacman -Sy --noconfirm fish
+elif command -v brew >/dev/null 2>&1; then
+    brew install fish
+elif command -v dnf >/dev/null 2>&1; then
+    sudo dnf install -y fish
+else
+    echo "No known package manager found. Skipping fish installation."
+fi

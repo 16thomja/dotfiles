@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Set fish as the default shell for the current user
+if command -v fish >/dev/null 2>&1; then
+    echo "Setting fish as the default shell..."
+    chsh -s $(which fish)
+else
+    echo "Fish shell is not installed. Skipping shell change."
+fi

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Run conda init fish if both conda and fish exist
+if command -v conda >/dev/null 2>&1 && command -v fish >/dev/null 2>&1; then
+    echo "Running conda init fish..."
+    conda init fish
+else
+    echo "Conda or fish is not installed. Skipping conda init fish."
+fi
