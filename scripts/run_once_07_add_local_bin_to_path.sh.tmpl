@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Add ~/.local/bin to PATH permanently if not already present
+if [ -f "$HOME/.profile" ]; then
+    grep -qxF 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.profile" || echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.profile"
+else
+    # If ~/.profile does not exist, create it and add the PATH modification
+    echo 'export PATH="$HOME/.local/bin:$PATH"' > "$HOME/.profile"
+fi
