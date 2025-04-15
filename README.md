@@ -9,3 +9,9 @@ export PATH="$HOME/.local/bin:$PATH"
 chezmoi init https://github.com/16thomja/dotfiles.git
 chezmoi apply
 ```
+
+To apply changes on a managed machine:
+
+```
+chezmoi update
+```
