@@ -1,25 +1,23 @@
 # If the session is interactive, execute interactive-only commands.
 if status is-interactive
-    # Add any commands you want to run interactively.
+	# Dynamically set `fastfetch` ASCII logo.
+	if test (uname) = "Linux"
+	    set distro (lsb_release -is | string lower)
+	    if test "$distro" = "ubuntu" && test -d ~/.config/plasma-workspace
+	        fastfetch --logo kubuntu
+	    else
+	        fastfetch --logo $distro
+	    end
+	else if test (uname) = "Darwin"
+	    fastfetch --logo macos
+	else
+	    fastfetch
+	end
 end
 
 # Add CUDA to PATH if CUDA is installed.
 if test -d /usr/local/cuda-12.6/bin
     set -x PATH /usr/local/cuda-12.6/bin $PATH
-end
-
-# Dynamically set `fastfetch` ASCII logo.
-if test (uname) = "Linux"
-    set distro (lsb_release -is | string lower)
-    if test "$distro" = "ubuntu" && test -d ~/.config/plasma-workspace
-        fastfetch --logo kubuntu
-    else
-        fastfetch --logo $distro
-    end
-else if test (uname) = "Darwin"
-    fastfetch --logo macos
-else
-    fastfetch
 end
 
 # Remove the default Fish greeting.
