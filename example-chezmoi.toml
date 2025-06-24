@@ -1,0 +1,13 @@
+# Copy this file to ~/.config/chezmoi/chezmoi.toml and customize per host
+
+# "module" -> try module load
+# "package" -> try system package manager
+# "local" -> build/install in ~/.local
+
+[data]
+    [data.tool_config.fish]
+        strategy = "package"
+    [data.tool_config.tmux]
+        strategy = "package"
+    [data.tool_config.fastfetch]
+        strategy = "local"

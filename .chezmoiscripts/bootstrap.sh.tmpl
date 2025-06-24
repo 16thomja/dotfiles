@@ -1,0 +1,99 @@
+#!/bin/bash
+set -euo pipefail
+
+has()  { command -v "$1" &>/dev/null; }
+ok()   { echo "✅ $*"; }
+warn() { echo "⚠️ $*" >&2; }
+
+mkdir -p ~/.local/src ~/.local/share/lmodfiles
+
+{{- range $tool, $cfg := .tool_config }}
+strategy="{{$cfg.strategy}}"
+ok "Configuring {{ $tool }} -> strategy=$strategy"
+
+case "$strategy" in
+
+  module)
+    ok "  -> trying module load for {{ $tool }}"
+    if has module; then
+      module use "$HOME/.local/share/lmodfiles"
+      module try-load {{ $tool }} \
+        && { ok "    loaded {{ $tool }} via module"; exit 0; }
+    fi
+    warn "    module load failed; falling through"
+    ;&  # fall through to next case
+
+  package)
+    ok "  -> trying system package for {{ $tool }}"
+    if has sudo && (has apt || has yum || has pacman); then
+      if has apt;    then sudo apt install -y {{ $tool }}
+      elif has yum;  then sudo yum install -y {{ $tool }}
+      else             sudo pacman -Sy --noconfirm {{ $tool }}; fi
+      has {{ $tool }} && { ok "    installed {{ $tool }} via pkgmgr"; exit 0; }
+    fi
+    warn "    pkgmgr install failed; falling through"
+    ;&
+
+  local)
+    ok "  → building {{ $tool }} locally into ~/.local/{{ $tool }}"
+    cd ~/.local/src
+
+    {{ if eq $tool "fish" }}
+      # discover latest tag via github redirect
+      latest_tag=$(
+        curl -sI https://github.com/fish-shell/fish-shell/releases/latest \
+        | awk -F/ '/[Ll]ocation:/ {print $NF}' \
+        | tr -d $'\r'
+      )
+      ok "    detected fish version $latest_tag"
+      mkdir -p fish-$latest_tag
+      wget -qO- \
+        "https://github.com/fish-shell/fish-shell/archive/refs/tags/$latest_tag.tar.gz" \
+        | tar xz -C fish-$latest_tag --strip-components=1
+      cd fish-$latest_tag
+      mkdir -p build && cd build
+      cmake .. -DCMAKE_INSTALL_PREFIX="$HOME/.local/fish/$latest_tag"
+      make -j && make install
+      # symlink 'latest' for convenience
+      ln -snf "$HOME/.local/fish/$latest_tag" "$HOME/.local/fish/latest"
+
+    {{ else if eq $tool "tmux" }}
+      git clone https://…/tmux.git tmux-src
+      cd tmux-src && sh autogen.sh && ./configure --prefix="$HOME/.local/tmux/latest"
+      make -j && make install
+
+    {{ else if eq $tool "fastfetch" }}
+      latest_tag=$(
+        curl -sI https://github.com/fastfetch-cli/fastfetch/releases/latest \
+        | awk -F/ '/[Ll]ocation:/ {print $NF}' \
+        | tr -d $'\r'
+      )
+      ok "    detected fish version $latest_tag"
+      mkdir -p fish-$latest_tag
+      wget -qO- \
+        "https://github.com/fastfetch-cli/fastfetch/archive/refs/tags/$latest_tag.tar.gz" \
+        | tar xz -C fastfetch-$latest_tag --strip-components=1
+      cd fastfetch-$latest_tag
+      mkdir -p build && cd build
+      cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX="$HOME/.local/fastfetch/$latest_tag"
+      cmake --build . --target fastfetch
+      cmake --build . --target flashfetch
+      install -d "$HOME/.local/fastfetch/$latest_tag/bin"
+      install -m755 fastfetch flashfetch "$HOME/.local/fastfetch/$latest_tag/bin/"
+      ln -snf "$HOME/.local/fastfetch/$latest_tag" "$HOME/.local/fastfetch/latest"
+    {{ end }}
+
+    has {{ $tool }} && { ok "    built {{ $tool }} locally"; exit 0; }
+    warn "    local build of {{ $tool }} failed"
+    ;;
+
+  *)
+    warn "Unknown strategy '$strategy' for {{ $tool }}"
+    ;;
+esac
+
+{{- end }}
+
+ok "Bootstrap complete"
