@@ -1,0 +1,14 @@
+prompt_prefix = ""
+
+# "restore" -> restore screenful of history
+# "simple" -> try to restore fullscreen apps, otherwise restore nothing
+# { lines = n } -> restore n lines
+session_restore_mode = "screen"
+
+[[keybinding]]
+binding = "Ctrl-a d"
+action = "detach"
+
+# "never" -> never show motd
+# "dump" -> show on creation but not reattach
+motd = "never"
